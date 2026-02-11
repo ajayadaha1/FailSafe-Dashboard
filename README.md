@@ -17,7 +17,7 @@ All services are accessible through Nginx on **port 80**:
 | `failsafe.amd.com/lab-dashboard-api/docs` | Lab Dashboard API Docs | Swagger/OpenAPI interactive docs |
 | `failsafe.amd.com/L3-Debug-Doc/` | L3 Debug Documentation | MkDocs documentation site |
 | `failsafe.amd.com/adminer/` | Adminer | Lightweight database browser |
-| `failsafe.amd.com:3000` | DrawDB | Database schema visualizer |
+| `failsafe.amd.com/drawdb/` | DrawDB | Database schema visualizer |
 | `failsafe.amd.com/health` | Health Check | Returns `healthy` if Nginx is up |
 
 ## 🏗️ Architecture
@@ -35,7 +35,7 @@ Internet (Port 80)
     ├─→ /lab-dashboard-api/    → L3 Debug FastAPI (internal :8000)
     ├─→ /L3-Debug-Doc/         → MkDocs Static Site
     ├─→ /adminer/              → Adminer (internal :8080)
-    └─→ :3000                  → DrawDB (direct port)
+    └─→ /drawdb/               → DrawDB (internal :80)
          │
     Databases & Services
     ├─→ PostgreSQL (Silicon Trace) - internal :5432
@@ -60,7 +60,7 @@ Internet (Port 80)
 | **L3 Debug Backend** | `l3debug_backend` | 8000 | **8001** | FastAPI (proxied via `/lab-dashboard-api/`) |
 | **L3 Debug Frontend** | `l3debug_frontend` | 5173 | **5173** | React/Vite (proxied via `/lab-dashboard/`) |
 | **Adminer** | `adminer` | 8080 | **8080** | Database browser (proxied via `/adminer/`) |
-| **DrawDB** | `drawdb` | 80 | **3000** | Database schema visualizer |
+| **DrawDB** | `drawdb` | 80 | — | Database schema visualizer (proxied via `/drawdb/`) |
 
 ## 🚀 Quick Start
 
@@ -172,7 +172,7 @@ curl -s http://localhost:9200/_cluster/health | python3 -m json.tool
 ### Services won't start
 ```bash
 # Check for port conflicts
-sudo netstat -tulpn | grep -E ':(80|3000|5173|5432|5433|6379|8001|8080|8300|9200)'
+sudo netstat -tulpn | grep -E ':(80|5173|5432|5433|6379|8001|8080|8300|9200)'
 
 # Check Docker logs
 docker-compose logs --tail=50

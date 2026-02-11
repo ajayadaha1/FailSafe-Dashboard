@@ -246,8 +246,6 @@ services:
   drawdb:
     image: ghcr.io/drawdb-io/drawdb:latest
     container_name: drawdb
-    ports:
-      - "3000:80"
     networks:
       - failsafe_network
     restart: unless-stopped
