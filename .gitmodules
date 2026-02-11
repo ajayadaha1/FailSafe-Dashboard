@@ -7,3 +7,7 @@
 [submodule "failsafedashboard.github.io"]
 	path = failsafedashboard.github.io
 	url = https://github.com/FailSafeDashboard/FailSafeDashboard.github.io.git
+[submodule "swinfra-agent-mcp-platform"]
+	path = swinfra-agent-mcp-platform
+	url = git@github.com:AMD-AI-Platform/swinfra-agent-mcp-platform.git
+	branch = feature-servers-silicon-trace
