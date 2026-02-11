@@ -11,6 +11,7 @@ services:
     container_name: failsafe_nginx
     ports:
       - "80:80"
+      - "8083:8083"
     depends_on:
       - silicon_trace_backend
       - silicon_trace_frontend
