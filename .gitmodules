@@ -1,0 +1,9 @@
+[submodule "L3_Debug"]
+	path = L3_Debug
+	url = git@github.amd.com:Failsafe/L3_Debug.git
+[submodule "Silicon-Trace"]
+	path = Silicon-Trace
+	url = git@github.com:ajayadaha1/Silicon-Trace.git
+[submodule "failsafedashboard.github.io"]
+	path = failsafedashboard.github.io
+	url = https://github.com/FailSafeDashboard/FailSafeDashboard.github.io.git

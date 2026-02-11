@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMD Engineering Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="alternate icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="css/main-dashboard.css">
+</head>
+<body>
+    <!-- Background grid pattern -->
+    <div class="grid-pattern"></div>
+    
+    <div class="container">
+        <!-- Header Section -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="amd-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                            <polygon points="20,5 35,35 5,35" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h1>FailSafe Team Dashboard</h1>
+                        <p>Architecture & Development Tools</p>
+                    </div>
+                </div>
+                <div class="header-info">
+                    <div class="info-item">
+                        <span class="label">Status</span>
+                        <span class="value online">● Online</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Time</span>
+                        <span class="value" id="clock"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Tool Section -->
+        <section class="hero-section">
+            <a href="pages/cpu-delta-docs.html" class="hero-card">
+                <div class="hero-badge">Featured Tool</div>
+                <div class="hero-content">
+                    <div class="hero-icon">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <rect x="8" y="8" width="48" height="48" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <line x1="32" y1="8" x2="32" y2="56" stroke="currentColor" stroke-width="2"/>
+                            <line x1="8" y1="32" x2="56" y2="32" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="20" cy="20" r="3" fill="currentColor"/>
+                            <circle cx="44" cy="20" r="3" fill="currentColor"/>
+                            <circle cx="20" cy="44" r="3" fill="currentColor"/>
+                            <circle cx="44" cy="44" r="3" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="hero-text">
+                        <h2>CPU Delta Docs</h2>
+                        <p class="hero-description">Compare AMD CPU architectures side-by-side. Explore specifications, analyze differences, and understand microarchitecture evolution across generations.</p>
+                        <div class="hero-features">
+                            <span class="feature-tag">Interactive Comparison</span>
+                            <span class="feature-tag">13 Data Sheets</span>
+                            <span class="feature-tag">Mobile Optimized</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-action">
+                    <span>Launch Tool</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </a>
+        </section>
+
+        <!-- Hero Tool Section - Silicon Trace -->
+        <section class="hero-section">
+            <a href="silicon-trace/" class="hero-card">
+                <div class="hero-badge">Featured Tool</div>
+                <div class="hero-content">
+                    <div class="hero-icon">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <rect x="12" y="12" width="40" height="40" rx="3" stroke="currentColor" stroke-width="2"/>
+                            <path d="M20 20L44 44M44 20L20 44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="32" cy="32" r="6" stroke="currentColor" stroke-width="2"/>
+                            <path d="M32 8L32 18M32 46L32 56M8 32L18 32M46 32L56 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="hero-text">
+                        <h2>Silicon Trace</h2>
+                        <p class="hero-description">Hardware failure analysis tool for parsing and analyzing asset data from Excel and PowerPoint files. Track test tier progression and identify failure patterns.</p>
+                        <div class="hero-features">
+                            <span class="feature-tag">Excel & PowerPoint Parser</span>
+                            <span class="feature-tag">Multi-File Merging</span>
+                            <span class="feature-tag">Tier Analysis</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-action">
+                    <span>Launch Tool</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </a>
+        </section>
+
+        <!-- Additional Tools Grid -->
+        <section class="tools-section">
+            <h3 class="section-title">Additional Tools</h3>
+            <div class="tools-grid">
+                <a href="silicon-trace/" class="tool-card">
+                    <div class="tool-status active">Active</div>
+                    <div class="tool-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="8" y="8" width="32" height="32" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M16 16L32 32M32 16L16 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="24" cy="24" r="4" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h4>Silicon Trace</h4>
+                    <p>Hardware failure analysis tool for parsing and analyzing asset data from Excel and PowerPoint files</p>
+                </a>
+
+                <a href="lab-dashboard/" class="tool-card">
+                    <div class="tool-status active">Active</div>
+                    <div class="tool-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="6" y="6" width="36" height="36" rx="3" stroke="currentColor" stroke-width="2"/>
+                            <path d="M14 30V22" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M22 30V18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M30 30V14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                            <circle cx="14" cy="22" r="2" fill="currentColor"/>
+                            <circle cx="22" cy="18" r="2" fill="currentColor"/>
+                            <circle cx="30" cy="14" r="2" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h4>Lab Dashboard</h4>
+                    <p>Real-time monitoring of lab systems, PDU power control, and L3 debug workflow management</p>
+                </a>
+
+                <div class="tool-card coming-soon">
+                    <div class="tool-status">Coming Soon</div>
+                    <div class="tool-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 8L8 16L24 24L40 16L24 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M8 24L24 32L40 24" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M8 32L24 40L40 32" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h4>New Hire Ramp-Up</h4>
+                    <p>Onboarding resources and training materials for new team members</p>
+                </div>
+
+                <div class="tool-card coming-soon">
+                    <div class="tool-status">Coming Soon</div>
+                    <div class="tool-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="8" y="12" width="32" height="24" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M16 20L20 24L28 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h4>Developer Toolbox</h4>
+                    <p>Internal utilities, debuggers, and development scripts</p>
+                </div>
+
+                <div class="tool-card coming-soon">
+                    <div class="tool-status">Coming Soon</div>
+                    <div class="tool-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="16" stroke="currentColor" stroke-width="2"/>
+                            <path d="M24 16V24L30 28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h4>Future Module</h4>
+                    <p>Additional tools and resources in development</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 AMD Engineering Group. Internal Use Only.</p>
+                <div class="footer-links">
+                    <a href="#docs">Documentation</a>
+                    <a href="#support">Support</a>
+                    <a href="#feedback">Feedback</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script src="js/main-dashboard.js"></script>
+</body>
+</html>

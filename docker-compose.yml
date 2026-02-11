@@ -1,0 +1,261 @@
+services:
+  # ============================================================================
+  # REVERSE PROXY
+  # ============================================================================
+  
+  # Reverse Proxy - Traffic Router
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    container_name: failsafe_nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - silicon_trace_backend
+      - silicon_trace_frontend
+      - l3debug_backend
+      - l3debug_frontend
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # ============================================================================
+  # SILICON TRACE SERVICES
+  # ============================================================================
+
+  # Silicon Trace - PostgreSQL Database
+  silicon_trace_db:
+    image: postgres:15-alpine
+    container_name: silicon_trace_db
+    environment:
+      POSTGRES_USER: silicon_user
+      POSTGRES_PASSWORD: silicon_pass
+      POSTGRES_DB: silicon_trace_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - silicon_trace_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U silicon_user -d silicon_trace_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # Silicon Trace - MCP Server (Model Context Protocol)
+  silicon_trace_mcp:
+    build:
+      context: ./swinfra-agent-mcp-platform
+      dockerfile: src/servers/silicon_trace/Dockerfile
+    container_name: silicon_trace_mcp
+    environment:
+      SILICON_TRACE_DATABASE_URL: postgresql+asyncpg://silicon_user:silicon_pass@silicon_trace_db:5432/silicon_trace_db
+    depends_on:
+      silicon_trace_db:
+        condition: service_healthy
+    command: uv run python main.py
+    ports:
+      - "8300:8000"
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # Silicon Trace - FastAPI Backend
+  silicon_trace_backend:
+    build:
+      context: ./Silicon-Trace/backend
+      dockerfile: Dockerfile
+    container_name: silicon_trace_backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://silicon_user:silicon_pass@silicon_trace_db:5432/silicon_trace_db
+      MCP_SERVER_URL: http://silicon_trace_mcp:8000/mcp/silicon_trace/
+      MCP_DATABASE_URL: postgresql+asyncpg://silicon_user:silicon_pass@silicon_trace_db:5432/silicon_trace_db
+      OPENAI_API_KEY: 8a5ea5e7e35b4b2d8d4f2ff108f442e7
+      HOST: 0.0.0.0
+      PORT: 8000
+    depends_on:
+      silicon_trace_db:
+        condition: service_healthy
+      silicon_trace_mcp:
+        condition: service_started
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # Silicon Trace - Streamlit Frontend
+  silicon_trace_frontend:
+    build:
+      context: ./Silicon-Trace
+      dockerfile: frontend/Dockerfile
+    container_name: silicon_trace_frontend
+    environment:
+      API_URL: http://xsjengvm210143/api
+      BACKEND_URL: http://silicon_trace_backend:8000
+      STREAMLIT_BASE_URL: /silicon-trace/
+      STREAMLIT_SERVER_BASE_URL_PATH: /silicon-trace/
+      OPENAI_API_KEY: 8a5ea5e7e35b4b2d8d4f2ff108f442e7
+      ENVIRONMENT: PROD
+    depends_on:
+      - silicon_trace_backend
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # ============================================================================
+  # L3 DEBUG LAB DASHBOARD SERVICES
+  # ============================================================================
+
+  # L3 Debug - PostgreSQL Database
+  l3debug_postgres:
+    image: postgres:16-alpine
+    container_name: l3debug_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: l3_debug
+    volumes:
+      - l3debug_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # L3 Debug - Redis Cache
+  l3debug_redis:
+    image: redis:7-alpine
+    container_name: l3debug_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # L3 Debug - Elasticsearch
+  l3debug_elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    container_name: l3debug_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # L3 Debug - FastAPI Backend
+  l3debug_backend:
+    build:
+      context: ./L3_Debug/webapp/backend
+      dockerfile: Dockerfile
+    container_name: l3debug_backend
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@l3debug_postgres:5432/l3_debug
+      - REDIS_URL=redis://l3debug_redis:6379/0
+      - APP_NAME=L3 Debug Dashboard
+      - DEBUG=true
+      - SECRET_KEY=dev_secret_key_change_in_production
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+      - FRONTEND_URL=http://failsafe.amd.com/lab-dashboard
+      - BACKEND_URL=http://failsafe.amd.com/lab-dashboard-api
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:8001,http://failsafe.amd.com
+      - ELASTICSEARCH_URL=http://l3debug_elasticsearch:9200
+      - GITHUB_CLIENT_ID=8f74f6e6f3e8c7bb13df
+      - GITHUB_CLIENT_SECRET=2e84f547ab091d5e027fe1db914fbd19b436d014
+      - GITHUB_ENTERPRISE_URL=https://github.amd.com
+      - GITHUB_API_URL=https://github.amd.com/api/v3
+      - GITHUB_OAUTH_AUTHORIZE_URL=https://github.amd.com/login/oauth/authorize
+      - GITHUB_OAUTH_TOKEN_URL=https://github.amd.com/login/oauth/access_token
+    ports:
+      - "8001:8000"
+    depends_on:
+      l3debug_postgres:
+        condition: service_healthy
+      l3debug_redis:
+        condition: service_healthy
+      l3debug_elasticsearch:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # L3 Debug - React Frontend
+  l3debug_frontend:
+    build:
+      context: ./L3_Debug/webapp/frontend
+      dockerfile: Dockerfile.dev
+    container_name: l3debug_frontend
+    environment:
+      - VITE_BASE_PATH=/lab-dashboard/
+      - VITE_API_URL=/lab-dashboard-api
+      - VITE_WS_URL=/lab-dashboard-api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - l3debug_backend
+    command: npm run dev
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # ============================================================================
+  # SHARED UTILITIES
+  # ============================================================================
+
+  # Adminer - Lightweight Database Browser
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: silicon_trace_db
+      ADMINER_DESIGN: dracula
+    ports:
+      - "8080:8080"
+    depends_on:
+      silicon_trace_db:
+        condition: service_healthy
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+  # DrawDB - Database Schema Visualizer
+  drawdb:
+    image: ghcr.io/drawdb-io/drawdb:latest
+    container_name: drawdb
+    ports:
+      - "3000:80"
+    networks:
+      - failsafe_network
+    restart: unless-stopped
+
+volumes:
+  silicon_trace_db_data:
+  l3debug_postgres_data:
+
+networks:
+  failsafe_network:
+    driver: bridge
