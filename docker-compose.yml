@@ -27,7 +27,7 @@ services:
 
   # Silicon Trace - PostgreSQL Database
   silicon_trace_db:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: silicon_trace_db
     environment:
       POSTGRES_USER: silicon_user
@@ -77,6 +77,8 @@ services:
       OPENAI_API_KEY: 8a5ea5e7e35b4b2d8d4f2ff108f442e7
       HOST: 0.0.0.0
       PORT: 8000
+      # RAG embedding model (toggles controlled via Admin > Settings UI)
+      RAG_EMBEDDING_MODEL: text-embedding-3-large
     depends_on:
       silicon_trace_db:
         condition: service_healthy
